@@ -2,6 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/alexmingoia/mio-mysql.png?branch=master)](http://travis-ci.org/alexmingoia/mio-mysql)
 [![Dependency Status](https://david-dm.org/alexmingoia/mio-mysql.png)](http://david-dm.org/alexmingoia/mio-mysql)
+[![Coverage Status](https://coveralls.io/repos/alexmingoia/mio-mysql/badge.png?branch=master)](https://coveralls.io/r/alexmingoia/mio-mysql?branch=master)
 
 MySQL persistence layer for [Mio][0].
 
