@@ -60,7 +60,7 @@ describe('Model', function() {
       var query = User.adapter.db.query;
       User.adapter.db.query = function(statement, values, callback) {
         statement.sql.should.include(
-          'from "user" where "user"."id" = $1 or "user"."name" = $2 limit $3'
+          'from "user" where "user"."id" = $1 or "user"."name" = $2'
         );
         for (var key in userA.attributes) {
           userA.attributes[User.options.tableName + '_' + key] = userA.attributes[key];
