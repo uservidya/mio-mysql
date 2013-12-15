@@ -25,11 +25,15 @@
     "mocha": "~1.12.1",
     "mio": "~0.1.x",
     "should": "~1.2.2",
-    "supertest": "~0.7.1"
+    "supertest": "~0.7.1",
+    "mocha-lcov-reporter": "0.0.1",
+    "jscoverage": "~0.3.8",
+    "coveralls": "~2.6.0"
   },
   "main": "./lib/mysql.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha test"
+    "prepublish": "./node_modules/jscoverage/bin/jscoverage lib lib-cov",
+    "test": "node ./lib/test-runner.js"
   },
   "engines": {
     "node": ">= 0.8"

@@ -4,7 +4,7 @@
 
 var should = require('should');
 var mio = require('mio');
-var mysql = require('..');
+var mysql = process.env.JSCOV ? require('../lib-cov/mysql') : require('../lib/mysql');
 
 var settings = {};
 
