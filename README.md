@@ -1,10 +1,11 @@
 # mio-mysql
 
 [![Build Status](https://secure.travis-ci.org/alexmingoia/mio-mysql.png?branch=master)](http://travis-ci.org/alexmingoia/mio-mysql)
-[![Dependency Status](https://david-dm.org/alexmingoia/mio-mysql.png)](http://david-dm.org/alexmingoia/mio-mysql)
 [![Coverage Status](https://coveralls.io/repos/alexmingoia/mio-mysql/badge.png?branch=master)](https://coveralls.io/r/alexmingoia/mio-mysql?branch=master)
+[![NPM version](https://badge.fury.io/js/mio.png)](http://badge.fury.io/js/mio)
+[![Dependency Status](https://david-dm.org/alexmingoia/mio-mysql.png)](http://david-dm.org/alexmingoia/mio-mysql)
 
-MySQL persistence layer for [Mio][0].
+MySQL storage plugin for [Mio][0].
 
 ## Installation
 
@@ -40,10 +41,10 @@ User.use('server', 'mio-mysql', {
 
 ### Queries
 
-The query is a subset of [mongo-sql](https://github.com/goodybag/mongo-sql).
-The `type`, `columns`, and `table` properties are handled by mio-mysql.
+The query syntax is a subset of [mongo-sql][1]. The `type`, `columns`,
+and `table` properties are handled by mio-mysql.
 
-### Custom table / field names
+### Custom table names
 
 Custom table names are specified using the `tableName` option. For example:
 
@@ -55,6 +56,8 @@ User.use(mysql({
   tableName: 'users'
 }));
 ```
+
+### Custom column names
 
 Custom field names are provided by a `columnName` property in the attribute
 definition. For example:
@@ -78,7 +81,8 @@ User
 
 Attributes with `type: "date"` will be handled based on the `columnType`
 property. This property can either be "datetime", "timestamp", or "integer",
-corresponding to MySQL column type.
+corresponding to MySQL column type. If not specified, mio-mysql will assume
+"integer".
 
 ### Data formatters
 
@@ -99,6 +103,20 @@ Event.attr('date', { dataFormatter: function(value, Event) {
 Models that share a settings object will share a connection pool, exposed via
 `settings.pool`.
 
+```javascript
+var settings = {
+  database: 'mydb',
+  user: 'root'
+};
+
+// Both User and Post models will share the same connection pool.
+User.use('server', 'mio-mysql', settings);
+Post.use('server', 'mio-mysql', settings);
+
+console.log(settings.pool);
+// => node-mysql connection pool object...
+```
+
 ### exports.mysql
 
 [MySQL](https://github.com/felixge/node-mysql) module.
@@ -117,3 +135,4 @@ npm test
 ## MIT Licensed
 
 [0]: https://github.com/alexmingoia/mio/
+[1]: https://github.com/goodybag/mongo-sql/
