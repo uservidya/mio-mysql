@@ -71,14 +71,89 @@ describe('Model', function() {
         callback(null, [userA.attributes, userB.attributes], userB.attributes);
       };
       User.all(
-        { where: { $or: { id: userA.primary, name: "jeff" }}},
+        { $or: { id: userA.primary, name: "jeff" }},
         function(err, found) {
           User.adapter.db.query = query;
           if (err) return done(err);
           should.exist(found);
           found.should.be.instanceOf(Array);
-          found.should.have.property('limit', 50);
+          found.pop().primary.should.equal(userB.primary);
+          done();
+        }
+      );
+    });
+
+    it('supports limit and offset pagination parameters', function(done) {
+      var userA = new User({id: 1, name: 'alex'});
+      var userB = new User({id: 2, name: 'jeff'});
+      var query = User.adapter.db.query;
+      User.adapter.db.query = function(statement, values, callback) {
+        User.adapter.db.query = function(statement, values, callback) {
+          User.adapter.db.query = query;
+          callback(null, [userA.attributes, userB.attributes], userB.attributes);
+        };
+        values.should.be.instanceOf(Array);
+        values.should.have.property(2, 25);
+        values.should.have.property(3, 75);
+        statement.sql.should.include(
+          'from "user" where "user"."id" = $1 ' +
+          'or "user"."name" = $2 limit $3 offset $4'
+        );
+        for (var key in userA.attributes) {
+          userA.attributes[User.options.tableName + '_' + key] = userA.attributes[key];
+        }
+        for (var key in userB.attributes) {
+          userB.attributes[User.options.tableName + '_' + key] = userB.attributes[key];
+        }
+        callback(null, [userA.attributes, userB.attributes], userB.attributes);
+      };
+      User.all(
+        { $or: { id: userA.primary, name: "jeff" }, limit: 25, offset: 75 },
+        function(err, found) {
+          if (err) return done(err);
+          should.exist(found);
+          found.should.be.instanceOf(Array);
+          found.should.have.property('limit', 25);
           found.should.have.property('offset');
+          found.pop().primary.should.equal(userB.primary);
+          done();
+        }
+      );
+    });
+
+    it('supports page and pageSize pagination parameters', function(done) {
+      var userA = new User({id: 1, name: 'alex'});
+      var userB = new User({id: 2, name: 'jeff'});
+      var query = User.adapter.db.query;
+      User.adapter.db.query = function(statement, values, callback) {
+        User.adapter.db.query = function(statement, values, callback) {
+          User.adapter.db.query = query;
+          callback(null, [{_count: 107}], userB.attributes);
+        };
+        values.should.be.instanceOf(Array);
+        values.should.have.property(2, 25);
+        values.should.have.property(3, 75);
+        statement.sql.should.include(
+          'from "user" where "user"."id" = $1 ' +
+          'or "user"."name" = $2 limit $3 offset $4'
+        );
+        for (var key in userA.attributes) {
+          userA.attributes[User.options.tableName + '_' + key] = userA.attributes[key];
+        }
+        for (var key in userB.attributes) {
+          userB.attributes[User.options.tableName + '_' + key] = userB.attributes[key];
+        }
+        callback(null, [userA.attributes, userB.attributes], userB.attributes);
+      };
+      User.all(
+        { $or: { id: userA.primary, name: "jeff" }, page: 4, pageSize: 25 },
+        function(err, found) {
+          if (err) return done(err);
+          should.exist(found);
+          found.should.be.instanceOf(Array);
+          found.should.have.property('page', 4);
+          found.should.have.property('pages', 5);
+          found.should.have.property('pageSize', 25);
           found.pop().primary.should.equal(userB.primary);
           done();
         }

@@ -19,7 +19,7 @@ See the [Mio][0] documentation for query methods like find, save, etc.
 
 ### exports(settings, options)
 
-Create a new Mio plugin with the given database `settings` and `options`.
+Create a new Mio mysql plugin with the given database `settings` and `options`.
 
 `settings` same as settings for
 [node-mysql](https://github.com/felixge/node-mysql/)
@@ -43,6 +43,39 @@ User.use('server', 'mio-mysql', {
 
 The query syntax is a subset of [mongo-sql][1]. The `type`, `columns`,
 and `table` properties are handled by mio-mysql.
+
+### Pagination
+
+Both `offset` and `limit`, and `page` and `pageSize` query parameters are
+supported.
+
+The collection returned by `Model.findAll()` has pagination properties on the
+array:
+
+```javascript
+User.findAll({ page: 1, pageSize: 25 }, function(err, users) {
+  console.log(users);
+  // => [user1, user2, user3, ...]
+
+  console.log(users.total);
+  // => 73
+
+  console.log(users.pages);
+  // => 3
+
+  console.log(users.page);
+  // => 1
+
+  console.log(users.pageSize);
+  // => 25
+
+  console.log(users.offset);
+  // => 0
+
+  console.log(users.limit);
+  // => 25
+});
+```
 
 ### Custom table names
 
