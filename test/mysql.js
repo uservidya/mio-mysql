@@ -90,22 +90,22 @@ describe('Model', function() {
       User.adapter.db.query = function(statement, values, callback) {
         User.adapter.db.query = function(statement, values, callback) {
           User.adapter.db.query = query;
+          values.should.be.instanceOf(Array);
+          values.should.have.property(2, 25);
+          values.should.have.property(3, 75);
+          statement.sql.should.include(
+            'from "user" where "user"."id" = $1 ' +
+            'or "user"."name" = $2 limit $3 offset $4'
+          );
           callback(null, [userA.attributes, userB.attributes], userB.attributes);
         };
-        values.should.be.instanceOf(Array);
-        values.should.have.property(2, 25);
-        values.should.have.property(3, 75);
-        statement.sql.should.include(
-          'from "user" where "user"."id" = $1 ' +
-          'or "user"."name" = $2 limit $3 offset $4'
-        );
         for (var key in userA.attributes) {
           userA.attributes[User.options.tableName + '_' + key] = userA.attributes[key];
         }
         for (var key in userB.attributes) {
           userB.attributes[User.options.tableName + '_' + key] = userB.attributes[key];
         }
-        callback(null, [userA.attributes, userB.attributes], userB.attributes);
+        callback(null, [{ _count: 107 }], userB.attributes);
       };
       User.all(
         { $or: { id: userA.primary, name: "jeff" }, limit: 25, offset: 75 },
@@ -128,22 +128,22 @@ describe('Model', function() {
       User.adapter.db.query = function(statement, values, callback) {
         User.adapter.db.query = function(statement, values, callback) {
           User.adapter.db.query = query;
-          callback(null, [{_count: 107}], userB.attributes);
+          values.should.be.instanceOf(Array);
+          values.should.have.property(2, 25);
+          values.should.have.property(3, 75);
+          statement.sql.should.include(
+            'from "user" where "user"."id" = $1 ' +
+            'or "user"."name" = $2 limit $3 offset $4'
+          );
+          callback(null, [userA.attributes, userB.attributes], userB.attributes);
         };
-        values.should.be.instanceOf(Array);
-        values.should.have.property(2, 25);
-        values.should.have.property(3, 75);
-        statement.sql.should.include(
-          'from "user" where "user"."id" = $1 ' +
-          'or "user"."name" = $2 limit $3 offset $4'
-        );
         for (var key in userA.attributes) {
           userA.attributes[User.options.tableName + '_' + key] = userA.attributes[key];
         }
         for (var key in userB.attributes) {
           userB.attributes[User.options.tableName + '_' + key] = userB.attributes[key];
         }
-        callback(null, [userA.attributes, userB.attributes], userB.attributes);
+        callback(null, [{ _count: 107 }], userB.attributes);
       };
       User.all(
         { $or: { id: userA.primary, name: "jeff" }, page: 4, pageSize: 25 },

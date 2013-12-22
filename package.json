@@ -3,6 +3,7 @@
   "description": "MySQL storage plugin for Mio.",
   "author": "Alex Mingoia <talk@alexmingoia.com>",
   "homepage": "https://github.com/alexmingoia/mio-mysql",
+  "version": "0.2.0",
   "repo": {
     "type": "git",
     "url": "git://github.com/alexmingoia/mio-mysql.git"
@@ -13,7 +14,6 @@
     "mio",
     "plugin"
   ],
-  "version": "0.1.5",
   "dependencies": {
     "extend": "1.2.1",
     "lingo": "0.0.5",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "mocha": "~1.12.1",
-    "mio": "~0.1.x",
+    "mio": "~0.3.x",
     "should": "~1.2.2",
     "supertest": "~0.7.1",
     "mocha-lcov-reporter": "0.0.1",
