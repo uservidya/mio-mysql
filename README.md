@@ -131,10 +131,10 @@ Event.attr('date', { dataFormatter: function(value, Event) {
 });
 ```
 
-### Connection pooling
+### Database connection
 
-Models that share a settings object will share a connection pool, exposed via
-`settings.pool`.
+Models that share a settings object will share a database connection, exposed via
+`settings.db`.
 
 ```javascript
 var settings = {
@@ -142,12 +142,12 @@ var settings = {
   user: 'root'
 };
 
-// Both User and Post models will share the same connection pool.
+// Both User and Post models will share the same connection.
 User.use('server', 'mio-mysql', settings);
 Post.use('server', 'mio-mysql', settings);
 
-console.log(settings.pool);
-// => node-mysql connection pool object...
+console.log(settings.db);
+// => node-mysql connection object...
 ```
 
 ### exports.mysql
