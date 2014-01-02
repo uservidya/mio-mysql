@@ -29,7 +29,7 @@ describe('module', function(done) {
   });
 
   it('constructs new mysql plugins', function(done) {
-    var plugin = mysql, settings;
+    var plugin = mysql(settings);
     should.exist(plugin);
     plugin.should.be.a('function');
     done();
@@ -39,7 +39,7 @@ describe('module', function(done) {
 describe('plugin', function() {
   it('exposes db connection on Model', function(done) {
     var User = mio.createModel('User').attr('id').attr('name');
-    User.use(mysql, settings);
+    User.use(mysql(settings));
     should.exist(User.adapter.settings.db);
     done();
   });
@@ -81,7 +81,7 @@ describe('plugin', function() {
       };
     };
     var User = mio.createModel('User').attr('id').attr('name');
-    User.use(mysql, {});
+    User.use(mysql({}));
     var error = new Error('connection lost');
     error.code = 'PROTOCOL_CONNECTION_LOST';
     User.adapter.settings.db.emit('error', error);
@@ -101,10 +101,10 @@ describe('adapter', function() {
       .attr('created_at', { type: 'date', columnType: 'timestamp' });
     Post = mio.createModel('Post').attr('id', { primary: true }).attr('title').attr('user_id');
     Tag = mio.createModel('Tag').attr('id', { primary: true })
-    User.use(mysql, settings);
-    Post.use(mysql, settings);
-    Tag.use(mysql, settings);
-    TagUser.use(mysql, settings);
+    User.use(mysql(settings));
+    Post.use(mysql(settings));
+    Tag.use(mysql(settings));
+    TagUser.use(mysql(settings));
     User.hasMany(Post, {
       as: 'posts',
       foreignKey: 'user_id'
@@ -303,7 +303,7 @@ describe('adapter', function() {
           length: 255,
           columnName: 'name'
         });
-      User.use(mysql, settings);
+      User.use(mysql(settings));
       var user = new User({ fullname: 'alex' });
       var query = User.adapter.settings.db.query;
       User.adapter.settings.db.query = function(statement, values, cb) {
@@ -616,7 +616,7 @@ describe('adapter', function() {
 
 describe('collection', function() {
   var User = mio.createModel('User').attr('id').attr('name');
-  User.use(mysql, settings);
+  User.use(mysql(settings));
 
   describe('#toJSON()', function() {
     it('includes pagination properties', function(done) {
