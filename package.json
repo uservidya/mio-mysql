@@ -3,7 +3,7 @@
   "description": "MySQL storage plugin for Mio.",
   "author": "Alex Mingoia <talk@alexmingoia.com>",
   "homepage": "https://github.com/alexmingoia/mio-mysql",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "repo": {
     "type": "git",
     "url": "git://github.com/alexmingoia/mio-mysql.git"
