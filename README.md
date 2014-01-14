@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/alexmingoia/mio-mysql.png?branch=master)](http://travis-ci.org/alexmingoia/mio-mysql)
 [![Coverage Status](https://coveralls.io/repos/alexmingoia/mio-mysql/badge.png?branch=master)](https://coveralls.io/r/alexmingoia/mio-mysql?branch=master)
-[![NPM version](https://badge.fury.io/js/mio.png)](http://badge.fury.io/js/mio)
+[![NPM version](https://badge.fury.io/js/mio-mysql.png)](http://badge.fury.io/js/mio-mysql)
 [![Dependency Status](https://david-dm.org/alexmingoia/mio-mysql.png)](http://david-dm.org/alexmingoia/mio-mysql)
 
 MySQL storage plugin for [Mio][0].
