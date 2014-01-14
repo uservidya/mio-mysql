@@ -17,7 +17,7 @@
   "dependencies": {
     "lingo": "~0.0.5",
     "mongo-sql": "~2.2.6",
-    "mysql": "~2.0.0-rc2",
+    "mysql": "~2.0.0",
     "async": "~0.2.9"
   },
   "devDependencies": {
