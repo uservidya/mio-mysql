@@ -131,6 +131,14 @@ Event.attr('date', { dataFormatter: function(value, Event) {
 });
 ```
 
+### Query timeout
+
+Queries have a default timeout of `60000` milliseconds. If the query takes
+longer, the connection will be destroyed and the callback executed with
+`Error("Connection ended due to query time-out.")`.
+
+To change the query timeout, set `settings.queryTimeout` to the desired value.
+
 ### Database connection
 
 mio-mysql utilizes node-mysql's connection pool.

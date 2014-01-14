@@ -95,6 +95,7 @@ describe('adapter', function() {
       pool.on = function() {};
       pool.getConnection = function(cb) {
         cb(null, {
+          destroy: function() {},
           query: pool.query,
           release: function() { }
         });
