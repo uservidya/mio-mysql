@@ -44,47 +44,37 @@ describe('plugin', function() {
     done();
   });
 
-  it('reconnects if connection is lost', function(done) {
-    var createConnection = mysql.mysql.createConnection;
-    mysql.mysql.createConnection = function(settings) {
-      mysql.mysql.createConnection = function(settings) {
-        mysql.mysql.createConnection = createConnection;
-        return {
-          config: {},
-          connect: function() {},
-          query: function() {},
-          on: function() { done(); }
-        };
-      };
-      var handler;
+  it('destroys connection on error', function(done) {
+    var handler = {};
+    mysql.mysql.createPool = function(settings) {
       return {
-        config: {},
-        connect: function(cb) {
-          cb();
-        },
-        emit: function(event, error) {
-          if (event == 'error') {
-            User.adapter.settings.db.config.queryFormat.call(
-              { escape: function() {} },
-              '$1, $2, $3',
-              [1, 2, 3]
-            );
-            handler(error);
-          }
+        emit: function(event, obj) {
+          if (handler[event]) handler[event](obj);
         },
         on: function(event, callback) {
-          if (event == 'error') handler = callback;
-        },
-        query: function(statement, values, done) {
-          done && done(null, [], {});
+          handler[event] = callback;
         }
       };
     };
     var User = mio.createModel('User').attr('id').attr('name');
     User.use(mysql({}));
-    var error = new Error('connection lost');
-    error.code = 'PROTOCOL_CONNECTION_LOST';
-    User.adapter.settings.db.emit('error', error);
+    User.adapter.settings.pool.emit('connection', {
+      on: function(event, obj) {
+        handler[event] = obj;
+      },
+      emit: function() {
+        if (handler[event]) handler[event](obj);
+      },
+      config: {},
+      destroy: function() {
+        done();
+      },
+      query: function() {
+        var error = new Error('connection lost');
+        error.code = 'PROTOCOL_CONNECTION_LOST';
+        User.adapter.settings.pool.emit('error', error);
+      }
+    });
   });
 });
 
@@ -92,6 +82,26 @@ describe('adapter', function() {
   var User, Post, Tag;
 
   beforeEach(function(done) {
+    settings = {};
+
+    mysql.mysql.createPool = function() {
+      var pool = {};
+      pool.query = function() {
+        var args = Array.prototype.slice.call(arguments);
+        var cb = args.pop();
+        cb();
+      };
+      pool.emit = function() {};
+      pool.on = function() {};
+      pool.getConnection = function(cb) {
+        cb(null, {
+          query: pool.query,
+          release: function() { }
+        });
+      };
+
+      return pool;
+    };
     var TagUser = mio.createModel('TagUser').attr('user_id').attr('tag_id');
     User = mio.createModel('User')
       .attr('id', { primary: true })
@@ -553,17 +563,19 @@ describe('adapter', function() {
 
   describe('.query()', function() {
     it('retries on deadlock', function(done) {
-      var query = User.adapter.settings.db.query;
-      User.adapter.settings.db.query = function(statement, values, cb) {
-        User.adapter.settings.db.query = function(s, v, cb) {
-          s.should.equal(statement);
-          User.adapter.settings.db.query = function(s, v, cb) {
-            User.adapter.settings.db.query = query;
-            cb(null, [{ user_id: 1 }], { id: 1 });
-          };
-          cb(new Error('DEADLOCK'));
-        };
-        cb(new Error('DEADLOCK'));
+      User.adapter.settings.pool.getConnection = function(cb) {
+        count = 0;
+
+        cb(null, {
+          release: function() {},
+          query: query = function(s, v, cb) {
+            count++;
+            if (count > 2) {
+              return cb(null, [{ user_id: 1 }], { id: 1 });
+            }
+            cb(new Error('DEADLOCK'));
+          }
+        });
       };
       User.find(1, function(err, user) {
         if (err) return done(err);
@@ -620,9 +632,17 @@ describe('collection', function() {
 
   describe('#toJSON()', function() {
     it('includes pagination properties', function(done) {
-      var query = User.adapter.settings.db.query;
-      User.adapter.settings.db.query = function(statement, values, cb) {
-        cb(null, [{ user_id: 1 }], { id: 1 });
+      User.adapter.settings.pool = {
+        getConnection: function(cb) {
+          cb(null, {
+            release: function() {},
+            query: function(statement, values, cb) {
+              cb(null, [{ user_id: 1 }], { id: 1 });
+            }
+          });
+        },
+        on: function() {},
+        emit: function() {}
       };
       User.findAll({ created_at: 1234567890 }, function(err, collection) {
         if (err) return done(err);

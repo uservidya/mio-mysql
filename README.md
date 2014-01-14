@@ -133,8 +133,10 @@ Event.attr('date', { dataFormatter: function(value, Event) {
 
 ### Database connection
 
-Models that share a settings object will share a database connection, exposed via
-`settings.db`.
+mio-mysql utilizes node-mysql's connection pool.
+
+Models that share a settings object will share a connection pool, exposed via
+`settings.pool`.
 
 ```javascript
 var settings = {
@@ -146,8 +148,8 @@ var settings = {
 User.use('server', 'mio-mysql', settings);
 Post.use('server', 'mio-mysql', settings);
 
-console.log(settings.db);
-// => node-mysql connection object...
+console.log(settings.pool);
+// => node-mysql connection pool object...
 ```
 
 ### exports.mysql
