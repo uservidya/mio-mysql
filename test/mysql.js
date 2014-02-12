@@ -610,13 +610,13 @@ describe('adapter', function() {
       });
     });
 
-    it('converts boolean attributes to 1 or NULL', function(done) {
+    it('converts boolean attributes to 1 or 0', function(done) {
       var query = User.adapter.settings.db.query;
       User.adapter.settings.db.query = function(statement, values, cb) {
         statement.sql.should.include('active" = $1');
         statement.sql.should.include('flagged" = $2');
         values.should.include(1);
-        values.should.include('NULL');
+        values.should.include(0);
         cb(null, [{ user_id: 1 }], { id: 1 });
       };
       User.findAll({ active: true, flagged: false }, function(err, collection) {
