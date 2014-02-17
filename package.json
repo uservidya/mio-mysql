@@ -27,7 +27,8 @@
     "supertest": "~0.7.1",
     "mocha-lcov-reporter": "~0.0.1",
     "jscoverage": "~0.3.8",
-    "coveralls": "~2.6.0"
+    "coveralls": "~2.6.0",
+    "debug": "~0.7.4"
   },
   "main": "./lib/mysql.js",
   "scripts": {
